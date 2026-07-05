@@ -1,5 +1,5 @@
 /* ============================================================
-   Deal Command Center — state, persistence & deal math
+   DealProof — state, persistence & deal math
    ============================================================ */
 'use strict';
 
@@ -195,7 +195,7 @@
 
     importJSON(text) {
       const s = JSON.parse(text);
-      if (!s || s.v !== 2 || !Array.isArray(s.deals)) throw new Error('Not a Deal Command Center export');
+      if (!s || s.v !== 2 || !Array.isArray(s.deals)) throw new Error('Not a DealProof export');
       this.state = s;
       this.save();
     },

@@ -1,5 +1,5 @@
 /* ============================================================
-   Deal Command Center — content layer
+   DealProof — content layer
    Challenger motion · MEDDPICC backbone · Equinix Interconnection & Fabric
    ============================================================ */
 'use strict';

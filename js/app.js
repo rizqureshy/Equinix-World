@@ -1,5 +1,5 @@
 /* ============================================================
-   Deal Command Center — application shell, router & views
+   DealProof — application shell, router & views
    Rep workspace: playbook · pipeline · deal room · discovery ·
                   objections · emails
    Manager workspace: team command · deal inspect · coaching
@@ -74,9 +74,9 @@
 
       const side = el('aside.side', null,
         el('div.side-brand', null,
-          el('div.brand-kicker', { text: 'Interconnection Sales' }),
-          el('div.brand-name', { html: 'Deal <span>Command</span> Center' }),
-          el('div.brand-sub', { text: 'Challenger motion · MEDDPICC backbone' })),
+          el('div.brand-kicker', { text: 'Equinix Interconnection Sales' }),
+          el('div.brand-name', { html: 'Deal<span>Proof</span>' }),
+          el('div.brand-sub', { text: 'Score what you can prove · MEDDPICC × Challenger' })),
         this.sideNav,
         this.sideFoot);
 
@@ -1056,7 +1056,7 @@
           el('button.btn', {
             text: 'Export data (JSON)', onclick: () => {
               const blob = new Blob([S.exportJSON()], { type: 'application/json' });
-              const a = el('a', { href: URL.createObjectURL(blob), download: 'deal-command-center-export.json' });
+              const a = el('a', { href: URL.createObjectURL(blob), download: 'dealproof-export.json' });
               document.body.appendChild(a); a.click(); a.remove();
               toast('Export downloaded', 'good');
             }
@@ -1112,7 +1112,7 @@
     startTour() {
       const wasManager = S.state.role === 'manager';
       tour([
-        { sel: '.side-brand', title: 'One app, two jobs', body: 'Deal Command Center runs the Challenger sales motion on a MEDDPICC evidence backbone — for the reps working deals and the managers inspecting them.' },
+        { sel: '.side-brand', title: 'One app, two jobs', body: 'DealProof runs the Challenger sales motion on a MEDDPICC evidence backbone — for the reps working deals and the managers inspecting them.' },
         { sel: '.role-toggle', title: 'Rep ↔ Manager', body: 'Reps get the pipeline, deal rooms and talk tracks. Managers get the team heatmap, deal inspection and coaching tools. Press R to flip anytime.' },
         { sel: '.side-nav', title: 'The workspace', body: 'Number keys 1–6 jump between sections. Everything autosaves locally — no backend, no login.', before: () => { if (S.state.role !== 'rep') this.setRole('rep'); } },
         { sel: '.deal-grid, .empty', title: 'Deals, scored on evidence', body: 'Each deal is scored 0–3 per MEDDPICC letter. Health, forecast gates and coaching actions all derive from those scores.', before: () => this.go('pipeline'), wait: 420 },

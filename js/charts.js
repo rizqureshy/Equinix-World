@@ -1,5 +1,5 @@
 /* ============================================================
-   Deal Command Center — canvas charts
+   DealProof — canvas charts
    Ring gauge · MEDDPICC radar · sparkline · distribution bars
    All single-series, accent-violet, digits/labels carry meaning
    (never color alone). Animated mount, DPR-crisp.

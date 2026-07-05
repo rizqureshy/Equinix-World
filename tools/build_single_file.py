@@ -9,7 +9,7 @@ import re
 import pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-OUT = ROOT / "dist" / "Deal_Command_Center.html"
+OUT = ROOT / "dist" / "DealProof.html"
 
 html = (ROOT / "index.html").read_text(encoding="utf-8")
 

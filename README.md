@@ -1,4 +1,4 @@
-# Deal Command Center
+# DealProof
 
 A full sales-execution app for **Equinix Interconnection & Fabric** teams — the
 Challenger selling motion running on a **MEDDPICC** evidence backbone, with
@@ -10,7 +10,7 @@ No backend, no build step, no login. Everything persists to `localStorage`.
 ## Run it
 
 Open `index.html` in any modern browser — that's it. Or grab the portable
-single-file build at **`dist/Deal_Command_Center.html`** (all CSS, JS and
+single-file build at **`dist/DealProof.html`** (all CSS, JS and
 Three.js inlined; safe to email or drop in Slack).
 
 To rebuild the single file after editing source:
@@ -62,5 +62,5 @@ js/ui.js                tooltips, toasts, modals, palette, tour
 js/app.js               router, views, shell
 js/vendor/three.min.js  Three.js r160 (vendored — works offline)
 tools/build_single_file.py
-dist/Deal_Command_Center.html
+dist/DealProof.html
 ```

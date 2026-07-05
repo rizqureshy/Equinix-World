@@ -1,5 +1,5 @@
 /* ============================================================
-   Deal Command Center — WebGL wave engine (Three.js)
+   DealProof — WebGL wave engine (Three.js)
    Braided particle waveform: GPU-displaced point grid, simplex
    fbm + weaving gaussian ribbons, pointer ripples, theme lerp.
    ============================================================ */

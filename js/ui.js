@@ -1,5 +1,5 @@
 /* ============================================================
-   Deal Command Center — UI toolkit
+   DealProof — UI toolkit
    el() builder · tooltips · toasts · modals · command palette ·
    guided tour spotlight
    ============================================================ */
