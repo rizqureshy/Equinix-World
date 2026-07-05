@@ -426,16 +426,23 @@
       else if (h.pct < S.state.settings.riskThreshold)
         st.appendChild(el('div.callout.warn.reveal', { style: { '--i': 2 }, html: '<strong>Below commit threshold (' + S.state.settings.riskThreshold + '%).</strong> This deal doesn’t qualify for a forecast commit. Work the gap plan below before it goes on the sheet.' }));
 
-      // charts row
-      st.appendChild(el('section.grid-3.charts-row.reveal', { style: { '--i': 3 } },
-        el('div.card.chart-card', null,
+      // live widgets stay pinned beside the scrolling scorecard
+      const widgets = el('aside.deal-widgets.reveal', { style: { '--i': 3 } },
+        el('div.card.widget-card', null,
+          el('div.card-kicker', { text: 'Live health' }),
+          el('div.w-health-row', null,
+            el('span.w-pct', { text: h.pct + '%', style: { color: C.statusColor(h.status) } }),
+            el('div.w-health-meta', null,
+              el('div.w-label', { text: h.label }),
+              el('span.badge.' + gate.cls, { text: gate.name })))),
+        el('div.card.widget-card', null,
           el('div.card-kicker', { text: 'Letter shape' }),
           el('div.radar-wrap', null, radar)),
-        el('div.card.chart-card', null,
+        el('div.card.widget-card', null,
           el('div.card-kicker', { text: 'Health momentum' }),
           el('div.spark-wrap', null, spark),
           el('div.spark-note', { text: d.history.length > 1 ? 'From ' + d.history[0].pct + '% (' + fmtDate(d.history[0].ts) + ') to ' + h.pct + '% today' : 'Score the deal to start the trend' })),
-        el('div.card.chart-card.nba', null,
+        el('div.card.widget-card.nba', null,
           el('div.card-kicker', { text: 'Next best action' }),
           gaps.length
             ? el('div', null,
@@ -443,14 +450,17 @@
                 el('p.card-body.small', { text: gaps[0].action }))
             : el('div', null,
                 el('div.nba-letter.good', { text: 'No open gaps' }),
-                el('p.card-body.small', { text: 'Every letter is at “told to us” or better. Re-verify before commit: evidence ages.' })))));
+                el('p.card-body.small', { text: 'Every letter is at “told to us” or better. Re-verify before commit: evidence ages.' }))));
+
+      const scoreCol = el('div.deal-scorecol');
+      st.appendChild(el('div.deal-body', null, scoreCol, widgets));
 
       // scorecard
-      st.appendChild(el('div.section-head.reveal', { style: { '--i': 4 } },
+      scoreCol.appendChild(el('div.section-head.reveal', { style: { '--i': 4 } },
         el('h2.section-title', { text: 'Scorecard' }),
         el('span.legend', { text: D.scaleLegend })));
 
-      st.appendChild(el('section.score-list', null, D.letters.map((l, i) => {
+      scoreCol.appendChild(el('section.score-list', null, D.letters.map((l, i) => {
         const sc = d.scores[l.k];
         const scored = sc !== undefined && sc !== null;
         const noteOpen = (d.notes[l.k] || '').length > 0;
@@ -488,9 +498,9 @@
 
       // gap plan
       if (gaps.length) {
-        st.appendChild(el('div.section-head.reveal', { style: { '--i': 12 } },
+        scoreCol.appendChild(el('div.section-head.reveal', { style: { '--i': 12 } },
           el('h2.section-title', { text: 'Gap plan — ' + gaps.length + ' coaching action' + (gaps.length > 1 ? 's' : '') })));
-        st.appendChild(el('section.gap-list.reveal', { style: { '--i': 13 } }, gaps.map(g =>
+        scoreCol.appendChild(el('section.gap-list.reveal', { style: { '--i': 13 } }, gaps.map(g =>
           el('div.gap-row', null,
             el('span.gap-k', { text: g.k + ' · ' + g.name }),
             el('span.gap-action', { text: g.action })))));
@@ -498,8 +508,8 @@
 
       requestAnimationFrame(() => {
         C.ring(ring, h.pct, h.status, 96, 8);
-        C.radar(radar, D.letters, d.scores, 230);
-        C.spark(spark, d.history, 250, 64, h.status);
+        C.radar(radar, D.letters, d.scores, 206);
+        C.spark(spark, d.history, 234, 54, h.status);
       });
     },
 
