@@ -11,8 +11,8 @@
   const S = DCC.Store, D = DCC.DATA, C = DCC.Charts;
   const fmtMoney = DCC.fmtMoney, fmtDate = DCC.fmtDate;
 
-  const SCORE_BG = ['rgba(255,255,255,0.05)', '#58101B', '#A8152B', '#F2374E'];
-  const SCORE_FG = ['#847E90', '#FFB9C1', '#FFE3E6', '#FFFFFF'];
+  const SCORE_BG = ['rgba(255,255,255,0.05)', '#2C2260', '#6A46C9', '#B79CFF'];
+  const SCORE_FG = ['#7F8294', '#C9BDF0', '#F1EBFF', '#1D1145'];
 
   const VIEWS = {
     playbook:   { num: '01', label: 'Playbook',       roles: ['rep', 'manager'], theme: 'playbook',   sub: 'Challenger is how you sell. MEDDPICC is how you know it’s real.' },
@@ -627,7 +627,7 @@
       const t = S.team();
       const deals = S.state.deals;
       st.appendChild(this.head('Inspect evidence, not enthusiasm.',
-        'The pipeline as your reps scored it — every claim maps to a letter. The red column is the team’s skill gap; the red row is this week’s deal review.'));
+        'The pipeline as your reps scored it — every claim maps to a letter. The darkest column is the team’s skill gap; the darkest row is this week’s deal review.'));
 
       // KPIs
       st.appendChild(el('section.kpi-row.reveal', { style: { '--i': 1 } },

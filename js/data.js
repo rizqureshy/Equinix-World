@@ -286,7 +286,7 @@ DCC.DATA = {
     discovery: ['Every question should teach while it qualifies — the insight is implied in the ask.', 'Silence after a metric question is data: they’ve never measured it. Offer to baseline it together.', 'Mark questions as asked so your second call doesn’t repeat your first.'],
     objections:['Objections are buying signals wearing armor. Reframe, don’t rebut.', 'Never argue the spec. Move the frame to the cost of the status quo.', 'Practice the reframes out loud — reading them is not knowing them.'],
     emails:    ['No “hope you’re well.” Insight, tension, one ask.', 'Every placeholder you fill with their number doubles the reply rate.', 'The best follow-up email quotes the customer back to themselves.'],
-    team:      ['Coach the letter, not the deal. One gap, one action, one date.', 'The heatmap column with the most red is your team’s skill gap — train it, don’t just inspect it.', 'Commit-readiness is a gate, not a feeling. Hold the line on the threshold.'],
+    team:      ['Coach the letter, not the deal. One gap, one action, one date.', 'The heatmap column with the darkest cells is your team’s skill gap — train it, don’t just inspect it.', 'Commit-readiness is a gate, not a feeling. Hold the line on the threshold.'],
     inspect:   ['Vague answer → open the scorecard and score it live, together.', 'Your job in a deal review: find the lie the rep is telling themselves.', 'End every review with one coaching action logged — or it didn’t happen.'],
     coaching:  ['15 minutes, five questions, in order. Evidence, not enthusiasm.', 'Reviews inspect the rep’s evidence, not the customer’s intentions.', 'A red flag heard twice across the team is a training gap, not a deal gap.']
   },

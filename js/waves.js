@@ -70,7 +70,8 @@
   uniform float uPixelRatio;
   uniform float uFlow;
   uniform vec3 uColDeep;
-  uniform vec3 uColMain;
+  uniform vec3 uColL;
+  uniform vec3 uColR;
   uniform vec3 uColHot;
   uniform vec4 uRipples[6];
   varying vec3 vColor;
@@ -116,8 +117,13 @@
     gl_PointSize = uSize * uPixelRatio * (0.55 + e * 1.7) * (120.0 / max(dist, 1.0));
     gl_PointSize = min(gl_PointSize, 9.0 * uPixelRatio);
 
-    vec3 col = mix(uColDeep, uColMain, smoothstep(0.04, 0.72, e));
-    col = mix(col, uColHot, smoothstep(0.72, 1.25, e));
+    // spectrum gradient: hue sweeps across x and drifts with time/depth
+    float g = clamp(position.x / 26.0 + 0.5
+                    + 0.22 * sin(t * 0.14 + position.z * 0.35)
+                    + 0.10 * sin(position.x * 0.18 - t * 0.23), 0.0, 1.0);
+    vec3 base = mix(uColL, uColR, g);
+    vec3 col = mix(uColDeep, base, smoothstep(0.04, 0.68, e));
+    col = mix(col, uColHot, smoothstep(0.78, 1.3, e));
     vColor = col * (1.0 + uKick * 0.55);
 
     float a = 0.045 + 0.9 * smoothstep(0.05, 0.95, e);
@@ -138,16 +144,18 @@
     gl_FragColor = vec4(vColor, vAlpha * glow);
   }`;
 
+  // Multicolor gradient palettes: l → r sweeps across the field,
+  // deep anchors the troughs, hot tips the crests.
   const THEMES = {
-    playbook:   { deep: 0x4a0712, main: 0xe0182f, hot: 0xff8ba1, amp: 1.00, flow: 0.10 },
-    pipeline:   { deep: 0x520713, main: 0xf52440, hot: 0xffb3a6, amp: 1.12, flow: 0.14 },
-    deal:       { deep: 0x3d0410, main: 0xcf1430, hot: 0xff7d92, amp: 0.92, flow: 0.08 },
-    discovery:  { deep: 0x4a0a22, main: 0xe02454, hot: 0xff9fc4, amp: 1.05, flow: 0.12 },
-    objections: { deep: 0x4d0808, main: 0xdb2323, hot: 0xffa184, amp: 1.08, flow: 0.13 },
-    emails:     { deep: 0x420a26, main: 0xcc2458, hot: 0xff9fd2, amp: 0.96, flow: 0.10 },
-    team:       { deep: 0x3c0728, main: 0xe0163f, hot: 0xff9fbc, amp: 1.10, flow: 0.13 },
-    inspect:    { deep: 0x38051c, main: 0xd01840, hot: 0xff8fae, amp: 0.94, flow: 0.09 },
-    coaching:   { deep: 0x33060f, main: 0xb81232, hot: 0xf58ba4, amp: 0.90, flow: 0.08 }
+    playbook:   { deep: 0x120e38, l: 0x1fc8f0, r: 0xa855f7, hot: 0xfff0d4, amp: 1.00, flow: 0.10 },
+    pipeline:   { deep: 0x0d1636, l: 0x2fd4a0, r: 0x4f6cf7, hot: 0xeafff4, amp: 1.12, flow: 0.14 },
+    deal:       { deep: 0x101034, l: 0x4f9cf7, r: 0xc26cf0, hot: 0xffeedd, amp: 0.92, flow: 0.08 },
+    discovery:  { deep: 0x0e1530, l: 0x25c9b4, r: 0x7d7bf5, hot: 0xf2fbff, amp: 1.05, flow: 0.12 },
+    objections: { deep: 0x1a1030, l: 0xf0a422, r: 0xd857c4, hot: 0xfff6df, amp: 1.08, flow: 0.13 },
+    emails:     { deep: 0x0f1234, l: 0x38aef8, r: 0xef6cb2, hot: 0xfff2ea, amp: 0.96, flow: 0.10 },
+    team:       { deep: 0x0c1630, l: 0x30d970, r: 0x2f9cf0, hot: 0xf0fff2, amp: 1.10, flow: 0.13 },
+    inspect:    { deep: 0x101332, l: 0x55e0e8, r: 0x9c7bf7, hot: 0xf4f6ff, amp: 0.94, flow: 0.09 },
+    coaching:   { deep: 0x0e142e, l: 0x4fe0c0, r: 0x8460f0, hot: 0xf0fbff, amp: 0.90, flow: 0.08 }
   };
 
   function hexToRgb(hex) {
@@ -180,13 +188,15 @@
         uPixelRatio: { value: this.dpr },
         uFlow: { value: 0.1 },
         uColDeep: { value: new THREE.Vector3(...hexToRgb(THEMES.playbook.deep)) },
-        uColMain: { value: new THREE.Vector3(...hexToRgb(THEMES.playbook.main)) },
+        uColL: { value: new THREE.Vector3(...hexToRgb(THEMES.playbook.l)) },
+        uColR: { value: new THREE.Vector3(...hexToRgb(THEMES.playbook.r)) },
         uColHot: { value: new THREE.Vector3(...hexToRgb(THEMES.playbook.hot)) },
         uRipples: { value: Array.from({ length: 6 }, () => new THREE.Vector4(0, 0, 0, 0)) }
       };
       this._target = {
         deep: hexToRgb(THEMES.playbook.deep),
-        main: hexToRgb(THEMES.playbook.main),
+        l: hexToRgb(THEMES.playbook.l),
+        r: hexToRgb(THEMES.playbook.r),
         hot: hexToRgb(THEMES.playbook.hot),
         amp: 1, flow: 0.1
       };
@@ -253,7 +263,7 @@
       const geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(arr, 3));
       const mat = new THREE.PointsMaterial({
-        color: 0xff5570, size: 0.035, transparent: true, opacity: 0.35,
+        color: 0x7fa8ff, size: 0.035, transparent: true, opacity: 0.32,
         depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true
       });
       this.dust = new THREE.Points(geo, mat);
@@ -272,7 +282,8 @@
     setTheme(name) {
       const th = THEMES[name] || THEMES.playbook;
       this._target.deep = hexToRgb(th.deep);
-      this._target.main = hexToRgb(th.main);
+      this._target.l = hexToRgb(th.l);
+      this._target.r = hexToRgb(th.r);
       this._target.hot = hexToRgb(th.hot);
       this._target.amp = th.amp;
       this._target.flow = th.flow;
@@ -320,7 +331,7 @@
       const u = this.uniforms, tg = this._target;
       const lerp = (a, b, f) => a + (b - a) * f;
       const f = 1 - Math.exp(-dt * 3.2);
-      ['Deep', 'Main', 'Hot'].forEach(name => {
+      ['Deep', 'L', 'R', 'Hot'].forEach(name => {
         const v = u['uCol' + name].value, t = tg[name.toLowerCase()];
         v.x = lerp(v.x, t[0], f); v.y = lerp(v.y, t[1], f); v.z = lerp(v.z, t[2], f);
       });

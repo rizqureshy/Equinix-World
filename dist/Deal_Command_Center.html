@@ -5,30 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Deal Command Center — Equinix Interconnection Sales</title>
 <meta name="description" content="Challenger motion on a MEDDPICC backbone — deal workspace for Equinix Interconnection & Fabric reps and managers.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23060409'/%3E%3Cpath d='M4 20c3-6 6-6 9 0s6 6 9 0 4-4 6-2' stroke='%23FF3B4E' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2305060C'/%3E%3Cpath d='M4 20c3-6 6-6 9 0s6 6 9 0 4-4 6-2' stroke='%238B5CF6' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
    Deal Command Center — design system
-   Near-black canvas · crimson signal · glass panels
+   Near-black canvas · spectrum signal · glass panels
    ============================================================ */
 
 :root {
-  --bg0: #060409;
-  --bg1: #0B0810;
+  --bg0: #05060C;
+  --bg1: #0A0B14;
   --panel: rgba(255, 255, 255, 0.035);
   --panel2: rgba(255, 255, 255, 0.06);
   --line: rgba(255, 255, 255, 0.09);
   --line2: rgba(255, 255, 255, 0.17);
-  --ink: #F2EEF3;
-  --ink2: #B9B3C2;
-  --ink3: #847E90;
-  --red: #FF3B4E;
-  --red-hi: #FF7A88;
-  --red-deep: #6E1220;
-  --red-soft: rgba(255, 59, 78, 0.13);
+  --ink: #EFF0F5;
+  --ink2: #B4B6C4;
+  --ink3: #7F8294;
+  --acc: #8B5CF6;
+  --acc-hi: #A78BFA;
+  --acc2: #22D3EE;
+  --acc-deep: #2E1E6B;
+  --acc-soft: rgba(139, 92, 246, 0.14);
+  --grad: linear-gradient(120deg, #22D3EE, #8B5CF6 60%, #D857C4);
   --good: #3ECF8E;
   --warn: #F2B33D;
   --bad: #FF5A64;
@@ -49,7 +51,7 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
-::selection { background: var(--red); color: #fff; }
+::selection { background: var(--acc); color: #fff; }
 button { font-family: inherit; color: inherit; background: none; border: none; cursor: pointer; }
 input, select, textarea { font-family: inherit; color: inherit; }
 canvas { display: block; }
@@ -63,8 +65,8 @@ canvas { display: block; }
 #bg {
   position: fixed; inset: 0; z-index: 0;
   background:
-    radial-gradient(120% 90% at 50% 110%, rgba(120, 8, 26, 0.28), transparent 60%),
-    radial-gradient(80% 60% at 80% -10%, rgba(64, 6, 20, 0.35), transparent 60%),
+    radial-gradient(120% 90% at 50% 110%, rgba(49, 34, 110, 0.30), transparent 60%),
+    radial-gradient(80% 60% at 80% -10%, rgba(10, 44, 74, 0.38), transparent 60%),
     var(--bg0);
 }
 #bg canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -82,7 +84,7 @@ canvas { display: block; }
   transition: opacity 0.7s ease, visibility 0.7s;
 }
 #splash.done { opacity: 0; visibility: hidden; }
-.splash-mark { font-family: var(--mono); font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--red); animation: splashPulse 1.4s ease infinite; }
+.splash-mark { font-family: var(--mono); font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--acc); animation: splashPulse 1.4s ease infinite; }
 .splash-name { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
 @keyframes splashPulse { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
 
@@ -97,9 +99,9 @@ canvas { display: block; }
   border-right: 1px solid var(--line);
 }
 .side-brand { padding: 26px 22px 20px; border-bottom: 1px solid var(--line); }
-.brand-kicker { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red-hi); }
+.brand-kicker { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--acc-hi); }
 .brand-name { font-size: 19px; font-weight: 700; line-height: 1.25; margin-top: 7px; }
-.brand-name span { color: var(--red); }
+.brand-name span { color: var(--acc); }
 .brand-sub { font-size: 11.5px; color: var(--ink3); margin-top: 4px; }
 
 .side-nav { padding: 14px 10px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
@@ -110,11 +112,11 @@ canvas { display: block; }
 }
 .nav-item:hover { background: rgba(255, 255, 255, 0.05); color: var(--ink); transform: translateX(2px); }
 .nav-item.active {
-  background: linear-gradient(90deg, var(--red-soft), rgba(255, 59, 78, 0.03));
-  border-left-color: var(--red); color: #fff; font-weight: 600;
+  background: linear-gradient(90deg, var(--acc-soft), rgba(139, 92, 246, 0.03));
+  border-left-color: var(--acc); color: #fff; font-weight: 600;
 }
 .nav-num { font-family: var(--mono); font-size: 10.5px; color: var(--ink3); width: 18px; flex-shrink: 0; }
-.nav-item.active .nav-num { color: var(--red-hi); }
+.nav-item.active .nav-num { color: var(--acc-hi); }
 .nav-label { flex: 1; }
 .nav-key {
   font-family: var(--mono); font-size: 10px; color: var(--ink3);
@@ -142,14 +144,14 @@ canvas { display: block; }
   border-bottom: 1px solid var(--line);
 }
 .crumb { display: flex; align-items: center; gap: 9px; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; }
-.crumb-num { color: var(--red); }
+.crumb-num { color: var(--acc); }
 .crumb-sep { color: var(--ink3); }
 .crumb-label { color: var(--ink2); }
 .top-actions { display: flex; align-items: center; gap: 10px; }
 
 .role-toggle { display: flex; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--line); border-radius: 9px; padding: 3px; }
 .role-btn { padding: 6px 15px; border-radius: 7px; font-size: 12.5px; font-weight: 600; color: var(--ink3); transition: all 0.2s; }
-.role-btn.active { background: var(--red); color: #fff; box-shadow: 0 4px 14px -4px rgba(255, 59, 78, 0.55); }
+.role-btn.active { background: var(--grad); color: #fff; box-shadow: 0 4px 14px -4px rgba(139, 92, 246, 0.55); }
 
 .top-btn {
   display: flex; align-items: center; gap: 7px; padding: 7px 13px;
@@ -175,7 +177,7 @@ canvas { display: block; }
 
 /* ---------- typography blocks ---------- */
 .view-head { margin-bottom: 26px; }
-.kicker { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--red); }
+.kicker { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--acc); }
 .view-title { font-size: 33px; font-weight: 700; line-height: 1.14; letter-spacing: -0.015em; margin-top: 10px; }
 .view-title .dim { color: var(--ink3); }
 .view-sub { font-size: 14.5px; color: var(--ink2); max-width: 640px; margin-top: 12px; }
@@ -197,9 +199,9 @@ canvas { display: block; }
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   transition: border-color 0.25s, transform 0.25s, background 0.25s;
 }
-.card.dark { background: linear-gradient(135deg, rgba(52, 6, 16, 0.55), rgba(20, 5, 12, 0.65)); border-color: rgba(255, 59, 78, 0.22); }
+.card.dark { background: linear-gradient(135deg, rgba(28, 24, 74, 0.55), rgba(8, 20, 40, 0.65)); border-color: rgba(139, 92, 246, 0.22); }
 .card-kicker { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; }
-.card-kicker.red { color: var(--red); }
+.card-kicker.red { color: var(--acc); }
 .card-kicker.amber { color: var(--warn); }
 .card-title { font-size: 15.5px; font-weight: 700; }
 .card-body { font-size: 13px; color: var(--ink2); margin-top: 8px; }
@@ -213,24 +215,24 @@ canvas { display: block; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px; }
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px; }
 
-.pillar { border-top: 2px solid var(--red); }
+.pillar { border-top: 2px solid var(--acc); }
 .stage-card .card-title { margin-top: 4px; }
 
 .tax-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px; }
 .tax-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 20px 22px; }
-.tax-num { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; color: var(--red-hi); font-variant-numeric: tabular-nums; }
+.tax-num { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; color: var(--acc-hi); font-variant-numeric: tabular-nums; }
 .tax-label { font-size: 12.5px; color: var(--ink); margin-top: 6px; font-weight: 600; }
 .tax-sub { font-family: var(--mono); font-size: 10px; color: var(--ink3); margin-top: 4px; }
 
 .rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 30px; margin-top: 14px; }
 .rule { font-size: 13px; color: var(--ink2); line-height: 1.6; }
-.rule em { color: var(--red-hi); font-style: normal; }
+.rule em { color: var(--acc-hi); font-style: normal; }
 
 .chip-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
 .letter-chip {
   font-family: var(--mono); font-size: 10.5px; font-weight: 600;
-  background: var(--red-soft); color: var(--red-hi);
-  border: 1px solid rgba(255, 59, 78, 0.25); border-radius: 6px; padding: 3px 8px;
+  background: var(--acc-soft); color: var(--acc-hi);
+  border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 6px; padding: 3px 8px;
 }
 
 /* ---------- buttons & inputs ---------- */
@@ -240,8 +242,8 @@ canvas { display: block; }
   transition: all 0.2s;
 }
 .btn:hover { border-color: rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.08); transform: translateY(-1px); }
-.btn.primary { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 0 6px 20px -6px rgba(255, 59, 78, 0.6); }
-.btn.primary:hover { background: #ff5262; }
+.btn.primary { background: var(--grad); border-color: transparent; color: #fff; box-shadow: 0 6px 20px -6px rgba(139, 92, 246, 0.6); }
+.btn.primary:hover { filter: brightness(1.12); }
 .btn.ghost { background: transparent; border-color: var(--line); color: var(--ink2); }
 .btn.ghost:hover { color: var(--ink); border-color: var(--line2); }
 .btn.danger { border-color: rgba(255, 90, 100, 0.4); color: var(--bad); }
@@ -253,7 +255,7 @@ canvas { display: block; }
   padding: 9px 12px; font-size: 13.5px; outline: none; width: 100%;
   transition: border-color 0.2s, background 0.2s;
 }
-.input:focus, .select:focus, .note-ta:focus { border-color: var(--red); background: rgba(255, 59, 78, 0.05); }
+.input:focus, .select:focus, .note-ta:focus { border-color: var(--acc); background: rgba(139, 92, 246, 0.05); }
 .select { appearance: none; -webkit-appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--ink3) 50%), linear-gradient(135deg, var(--ink3) 50%, transparent 50%); background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 30px; }
 .select option { background: #17121e; color: var(--ink); }
 
@@ -273,7 +275,7 @@ canvas { display: block; }
 /* ---------- pipeline ---------- */
 .deal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
 .deal-card { cursor: pointer; }
-.deal-card:hover { border-color: rgba(255, 59, 78, 0.45); transform: translateY(-3px); background: var(--panel2); box-shadow: var(--shadow); }
+.deal-card:hover { border-color: rgba(139, 92, 246, 0.45); transform: translateY(-3px); background: var(--panel2); box-shadow: var(--shadow); }
 .deal-card-top { display: flex; justify-content: space-between; gap: 14px; }
 .deal-name { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
 .deal-name.lg { font-size: 22px; }
@@ -325,8 +327,8 @@ canvas { display: block; }
 .radar-wrap { display: flex; justify-content: center; padding: 4px 0; }
 .spark-wrap { padding: 10px 0 4px; }
 .spark-note { font-size: 11.5px; color: var(--ink3); margin-top: 6px; }
-.nba { border-left: 2px solid var(--red); }
-.nba-letter { font-family: var(--mono); font-size: 12.5px; font-weight: 600; color: var(--red-hi); }
+.nba { border-left: 2px solid var(--acc); }
+.nba-letter { font-family: var(--mono); font-size: 12.5px; font-weight: 600; color: var(--acc-hi); }
 .nba-letter.good { color: var(--good); }
 
 .score-list { display: flex; flex-direction: column; gap: 10px; }
@@ -343,7 +345,7 @@ canvas { display: block; }
   color: var(--ink3); font-size: 10px; display: inline-flex; align-items: center; justify-content: center;
   cursor: help; flex-shrink: 0;
 }
-.tip-dot:hover { color: var(--red-hi); border-color: var(--red); }
+.tip-dot:hover { color: var(--acc-hi); border-color: var(--acc); }
 .score-def { font-size: 12.5px; color: var(--ink2); margin-top: 3px; }
 .score-anchor { font-size: 12.5px; margin-top: 8px; color: var(--ink3); }
 .score-anchor.good { color: var(--good); }
@@ -355,7 +357,7 @@ canvas { display: block; }
   border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; font-size: 12.5px; outline: none; line-height: 1.5;
 }
 .note-toggle { font-family: var(--mono); font-size: 10.5px; color: var(--ink3); margin-top: 8px; padding: 3px 0; letter-spacing: 0.05em; }
-.note-toggle:hover { color: var(--red-hi); }
+.note-toggle:hover { color: var(--acc-hi); }
 
 .score-btns { display: flex; gap: 6px; }
 .score-btn {
@@ -363,8 +365,8 @@ canvas { display: block; }
   font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--ink2);
   transition: all 0.16s;
 }
-.score-btn:hover { border-color: var(--red); color: var(--ink); transform: translateY(-1px); }
-.score-btn.on { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 0 5px 16px -5px rgba(255, 59, 78, 0.7); }
+.score-btn:hover { border-color: var(--acc); color: var(--ink); transform: translateY(-1px); }
+.score-btn.on { background: var(--acc); border-color: var(--acc); color: #fff; box-shadow: 0 5px 16px -5px rgba(139, 92, 246, 0.7); }
 
 .gap-list { display: flex; flex-direction: column; gap: 8px; }
 .gap-list.tight { margin-top: 4px; }
@@ -382,8 +384,8 @@ canvas { display: block; }
   font-family: var(--mono); font-size: 11.5px; font-weight: 600; padding: 7px 13px;
   border: 1px solid var(--line2); border-radius: 8px; color: var(--ink2); transition: all 0.18s;
 }
-.chip:hover { border-color: var(--red); color: var(--ink); }
-.chip.on { background: var(--red); border-color: var(--red); color: #fff; }
+.chip:hover { border-color: var(--acc); color: var(--ink); }
+.chip.on { background: var(--acc); border-color: var(--acc); color: #fff; }
 .chip.alt.on { background: rgba(255, 255, 255, 0.14); border-color: var(--line2); }
 
 .q-list { display: flex; flex-direction: column; gap: 10px; }
@@ -392,21 +394,21 @@ canvas { display: block; }
 .q-top { display: flex; gap: 12px; align-items: baseline; }
 .q-top .letter-chip { flex-shrink: 0; margin-top: 2px; }
 .q-text { font-size: 14.5px; font-weight: 600; line-height: 1.5; }
-.q-listen { font-size: 12.5px; color: var(--ink2); margin: 10px 0 0 0; padding: 8px 0 0 12px; border-left: 2px solid rgba(255, 59, 78, 0.3); line-height: 1.55; }
-.q-listen b { font-family: var(--mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--red-hi); margin-right: 8px; font-weight: 600; }
+.q-listen { font-size: 12.5px; color: var(--ink2); margin: 10px 0 0 0; padding: 8px 0 0 12px; border-left: 2px solid rgba(139, 92, 246, 0.3); line-height: 1.55; }
+.q-listen b { font-family: var(--mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--acc-hi); margin-right: 8px; font-weight: 600; }
 
 /* ---------- objections ---------- */
 .obj-list { display: flex; flex-direction: column; gap: 10px; }
 .obj-card { padding: 0; overflow: hidden; }
-.obj-card.open { border-color: rgba(255, 59, 78, 0.35); }
+.obj-card.open { border-color: rgba(139, 92, 246, 0.35); }
 .obj-head { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 17px 22px; text-align: left; transition: background 0.18s; }
 .obj-head:hover { background: rgba(255, 255, 255, 0.03); }
 .obj-title { font-size: 14.5px; font-weight: 600; }
-.obj-chev { font-family: var(--mono); font-size: 16px; color: var(--red); flex-shrink: 0; }
+.obj-chev { font-family: var(--mono); font-size: 16px; color: var(--acc); flex-shrink: 0; }
 .obj-body { display: grid; grid-template-columns: 1fr 1.5fr; gap: 14px; padding: 0 22px 20px; animation: revealUp 0.35s ease; }
 .obj-trap { background: rgba(242, 179, 61, 0.06); border: 1px solid rgba(242, 179, 61, 0.22); border-radius: 10px; padding: 14px 16px; }
 .obj-trap p { font-size: 12.5px; color: #EBD3A0; line-height: 1.6; }
-.obj-track { background: rgba(255, 59, 78, 0.06); border: 1px solid rgba(255, 59, 78, 0.22); border-radius: 10px; padding: 14px 16px; }
+.obj-track { background: rgba(139, 92, 246, 0.06); border: 1px solid rgba(139, 92, 246, 0.22); border-radius: 10px; padding: 14px 16px; }
 .obj-track p { font-size: 13px; line-height: 1.65; color: var(--ink); }
 .obj-track .btn { margin-top: 12px; }
 
@@ -416,9 +418,9 @@ canvas { display: block; }
 .mail-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 22px; border-bottom: 1px solid var(--line); }
 .mail-when { font-size: 12px; color: var(--ink3); margin-top: 2px; }
 .mail-body { padding: 18px 22px; }
-.mail-subject { font-family: var(--mono); font-size: 12px; color: var(--red-hi); margin-bottom: 12px; }
+.mail-subject { font-family: var(--mono); font-size: 12px; color: var(--acc-hi); margin-bottom: 12px; }
 .mail-text { font-size: 13px; line-height: 1.7; color: var(--ink2); }
-mark.ph, .ph-demo { background: rgba(255, 59, 78, 0.14); color: var(--red-hi); border-radius: 4px; padding: 0 4px; font-family: var(--mono); font-size: 0.92em; }
+mark.ph, .ph-demo { background: rgba(139, 92, 246, 0.14); color: var(--acc-hi); border-radius: 4px; padding: 0 4px; font-family: var(--mono); font-size: 0.92em; }
 
 /* ---------- manager: team ---------- */
 .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
@@ -458,7 +460,7 @@ mark.ph, .ph-demo { background: rgba(255, 59, 78, 0.14); color: var(--red-hi); b
 /* ---------- coaching ---------- */
 .coach-list { display: flex; flex-direction: column; gap: 12px; }
 .coach-row { display: grid; grid-template-columns: 40px 1fr; gap: 18px; padding: 20px 24px; }
-.coach-num { font-family: var(--mono); font-size: 19px; font-weight: 600; color: var(--red); }
+.coach-num { font-family: var(--mono); font-size: 19px; font-weight: 600; color: var(--acc); }
 .coach-q { font-size: 15.5px; font-weight: 700; line-height: 1.4; }
 .coach-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
 .coach-good, .coach-bad { font-size: 12.5px; line-height: 1.6; }
@@ -471,13 +473,13 @@ mark.ph, .ph-demo { background: rgba(255, 59, 78, 0.14); color: var(--red-hi); b
 .gates-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 4px; }
 .gate-name { font-size: 14.5px; font-weight: 700; }
 .gate-rule { font-size: 12.5px; color: var(--ink2); margin-top: 6px; line-height: 1.6; }
-.gate-test { font-family: var(--mono); font-size: 10.5px; color: var(--red-hi); margin-top: 10px; }
+.gate-test { font-family: var(--mono); font-size: 10.5px; color: var(--acc-hi); margin-top: 10px; }
 
 .log-input { display: flex; gap: 10px; align-items: flex-start; }
 .log-ta { min-height: 52px; flex: 1; }
 .log-list { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
 .log-row { display: flex; gap: 12px; align-items: baseline; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; }
-.log-date { font-family: var(--mono); font-size: 10.5px; color: var(--red-hi); flex-shrink: 0; }
+.log-date { font-family: var(--mono); font-size: 10.5px; color: var(--acc-hi); flex-shrink: 0; }
 .log-text { flex: 1; font-size: 12.5px; color: var(--ink2); line-height: 1.55; }
 
 /* ---------- forms ---------- */
@@ -499,7 +501,7 @@ mark.ph, .ph-demo { background: rgba(255, 59, 78, 0.14); color: var(--red-hi); b
 /* ---------- toasts ---------- */
 .toast-host { position: fixed; right: 22px; bottom: 22px; z-index: 320; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
 .toast {
-  background: rgba(23, 17, 28, 0.97); border: 1px solid var(--line2); border-left: 3px solid var(--red);
+  background: rgba(23, 17, 28, 0.97); border: 1px solid var(--line2); border-left: 3px solid var(--acc);
   border-radius: 10px; padding: 11px 16px; font-size: 12.5px; box-shadow: var(--shadow);
   opacity: 0; transform: translateX(16px); transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -546,8 +548,8 @@ mark.ph, .ph-demo { background: rgba(255, 59, 78, 0.14); color: var(--red-hi); b
 .pal-hint { font-family: var(--mono); font-size: 10px; color: var(--ink3); border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; }
 .pal-list { max-height: 340px; overflow-y: auto; padding: 6px; }
 .pal-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border-radius: 8px; text-align: left; }
-.pal-item.sel { background: var(--red-soft); }
-.pal-kind { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red-hi); width: 44px; flex-shrink: 0; }
+.pal-item.sel { background: var(--acc-soft); }
+.pal-kind { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--acc-hi); width: 44px; flex-shrink: 0; }
 .pal-label { flex: 1; font-size: 13.5px; }
 .pal-meta { font-family: var(--mono); font-size: 10.5px; color: var(--ink3); }
 .pal-empty { padding: 18px; text-align: center; color: var(--ink3); font-size: 13px; }
@@ -556,8 +558,8 @@ mark.ph, .ph-demo { background: rgba(255, 59, 78, 0.14); color: var(--red-hi); b
 .tour-shade { position: fixed; inset: 0; z-index: 250; background: rgba(4, 2, 7, 0.62); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
 .tour-shade.on { opacity: 1; pointer-events: auto; }
 .tour-box {
-  position: fixed; z-index: 251; border: 2px solid var(--red); border-radius: 14px;
-  box-shadow: 0 0 0 6px rgba(255, 59, 78, 0.18), 0 0 44px rgba(255, 59, 78, 0.28);
+  position: fixed; z-index: 251; border: 2px solid var(--acc); border-radius: 14px;
+  box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.18), 0 0 44px rgba(139, 92, 246, 0.28);
   opacity: 0; transition: all 0.42s cubic-bezier(0.22, 1, 0.36, 1); pointer-events: none;
 }
 .tour-box.on { opacity: 1; }
@@ -567,7 +569,7 @@ mark.ph, .ph-demo { background: rgba(255, 59, 78, 0.14); color: var(--red-hi); b
   opacity: 0; transform: translateY(8px); transition: all 0.42s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .tour-card.on { opacity: 1; transform: none; }
-.tour-step { font-family: var(--mono); font-size: 10px; color: var(--red-hi); letter-spacing: 0.12em; }
+.tour-step { font-family: var(--mono); font-size: 10px; color: var(--acc-hi); letter-spacing: 0.12em; }
 .tour-title { font-size: 15.5px; font-weight: 700; margin-top: 6px; }
 .tour-body { font-size: 12.5px; color: var(--ink2); margin-top: 6px; line-height: 1.6; }
 .tour-nav { display: flex; justify-content: space-between; margin-top: 16px; }
@@ -578,13 +580,13 @@ mark.ph, .ph-demo { background: rgba(255, 59, 78, 0.14); color: var(--red-hi); b
 .set-txt b { display: block; font-size: 13.5px; }
 .set-txt span { font-size: 12px; color: var(--ink3); }
 .set-ctl { display: flex; align-items: center; gap: 12px; }
-.range { accent-color: var(--red); width: 150px; }
-.range-v { font-family: var(--mono); font-size: 12px; color: var(--red-hi); width: 38px; text-align: right; }
+.range { accent-color: var(--acc); width: 150px; }
+.range-v { font-family: var(--mono); font-size: 12px; color: var(--acc-hi); width: 38px; text-align: right; }
 .switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; cursor: pointer; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .switch .slider { position: absolute; inset: 0; background: rgba(255, 255, 255, 0.12); border-radius: 13px; transition: background 0.2s; }
 .switch .slider::before { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: transform 0.2s; }
-.switch input:checked + .slider { background: var(--red); }
+.switch input:checked + .slider { background: var(--acc); }
 .switch input:checked + .slider::before { transform: translateX(18px); }
 .set-div { height: 1px; background: var(--line); margin: 10px 0; }
 .set-actions { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -602,10 +604,10 @@ mark.ph, .ph-demo { background: rgba(255, 59, 78, 0.14); color: var(--red-hi); b
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   transition: border-color 0.2s;
 }
-.tip-chip:hover { border-color: rgba(255, 59, 78, 0.5); }
-.tip-chip b { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.16em; color: var(--red); flex-shrink: 0; }
+.tip-chip:hover { border-color: rgba(139, 92, 246, 0.5); }
+.tip-chip b { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.16em; color: var(--acc); flex-shrink: 0; }
 .tip-chip.flash { animation: tipFlash 0.5s ease; }
-@keyframes tipFlash { 0% { border-color: var(--red); box-shadow: 0 0 22px rgba(255, 59, 78, 0.3); } }
+@keyframes tipFlash { 0% { border-color: var(--acc); box-shadow: 0 0 22px rgba(139, 92, 246, 0.3); } }
 
 /* ---------- responsive ---------- */
 @media (max-width: 1180px) {
@@ -947,7 +949,7 @@ DCC.DATA = {
     discovery: ['Every question should teach while it qualifies — the insight is implied in the ask.', 'Silence after a metric question is data: they’ve never measured it. Offer to baseline it together.', 'Mark questions as asked so your second call doesn’t repeat your first.'],
     objections:['Objections are buying signals wearing armor. Reframe, don’t rebut.', 'Never argue the spec. Move the frame to the cost of the status quo.', 'Practice the reframes out loud — reading them is not knowing them.'],
     emails:    ['No “hope you’re well.” Insight, tension, one ask.', 'Every placeholder you fill with their number doubles the reply rate.', 'The best follow-up email quotes the customer back to themselves.'],
-    team:      ['Coach the letter, not the deal. One gap, one action, one date.', 'The heatmap column with the most red is your team’s skill gap — train it, don’t just inspect it.', 'Commit-readiness is a gate, not a feeling. Hold the line on the threshold.'],
+    team:      ['Coach the letter, not the deal. One gap, one action, one date.', 'The heatmap column with the darkest cells is your team’s skill gap — train it, don’t just inspect it.', 'Commit-readiness is a gate, not a feeling. Hold the line on the threshold.'],
     inspect:   ['Vague answer → open the scorecard and score it live, together.', 'Your job in a deal review: find the lie the rep is telling themselves.', 'End every review with one coaching action logged — or it didn’t happen.'],
     coaching:  ['15 minutes, five questions, in order. Evidence, not enthusiasm.', 'Reviews inspect the rep’s evidence, not the customer’s intentions.', 'A red flag heard twice across the team is a training gap, not a deal gap.']
   },
@@ -1327,7 +1329,8 @@ DCC.DATA = {
   uniform float uPixelRatio;
   uniform float uFlow;
   uniform vec3 uColDeep;
-  uniform vec3 uColMain;
+  uniform vec3 uColL;
+  uniform vec3 uColR;
   uniform vec3 uColHot;
   uniform vec4 uRipples[6];
   varying vec3 vColor;
@@ -1373,8 +1376,13 @@ DCC.DATA = {
     gl_PointSize = uSize * uPixelRatio * (0.55 + e * 1.7) * (120.0 / max(dist, 1.0));
     gl_PointSize = min(gl_PointSize, 9.0 * uPixelRatio);
 
-    vec3 col = mix(uColDeep, uColMain, smoothstep(0.04, 0.72, e));
-    col = mix(col, uColHot, smoothstep(0.72, 1.25, e));
+    // spectrum gradient: hue sweeps across x and drifts with time/depth
+    float g = clamp(position.x / 26.0 + 0.5
+                    + 0.22 * sin(t * 0.14 + position.z * 0.35)
+                    + 0.10 * sin(position.x * 0.18 - t * 0.23), 0.0, 1.0);
+    vec3 base = mix(uColL, uColR, g);
+    vec3 col = mix(uColDeep, base, smoothstep(0.04, 0.68, e));
+    col = mix(col, uColHot, smoothstep(0.78, 1.3, e));
     vColor = col * (1.0 + uKick * 0.55);
 
     float a = 0.045 + 0.9 * smoothstep(0.05, 0.95, e);
@@ -1395,16 +1403,18 @@ DCC.DATA = {
     gl_FragColor = vec4(vColor, vAlpha * glow);
   }`;
 
+  // Multicolor gradient palettes: l → r sweeps across the field,
+  // deep anchors the troughs, hot tips the crests.
   const THEMES = {
-    playbook:   { deep: 0x4a0712, main: 0xe0182f, hot: 0xff8ba1, amp: 1.00, flow: 0.10 },
-    pipeline:   { deep: 0x520713, main: 0xf52440, hot: 0xffb3a6, amp: 1.12, flow: 0.14 },
-    deal:       { deep: 0x3d0410, main: 0xcf1430, hot: 0xff7d92, amp: 0.92, flow: 0.08 },
-    discovery:  { deep: 0x4a0a22, main: 0xe02454, hot: 0xff9fc4, amp: 1.05, flow: 0.12 },
-    objections: { deep: 0x4d0808, main: 0xdb2323, hot: 0xffa184, amp: 1.08, flow: 0.13 },
-    emails:     { deep: 0x420a26, main: 0xcc2458, hot: 0xff9fd2, amp: 0.96, flow: 0.10 },
-    team:       { deep: 0x3c0728, main: 0xe0163f, hot: 0xff9fbc, amp: 1.10, flow: 0.13 },
-    inspect:    { deep: 0x38051c, main: 0xd01840, hot: 0xff8fae, amp: 0.94, flow: 0.09 },
-    coaching:   { deep: 0x33060f, main: 0xb81232, hot: 0xf58ba4, amp: 0.90, flow: 0.08 }
+    playbook:   { deep: 0x120e38, l: 0x1fc8f0, r: 0xa855f7, hot: 0xfff0d4, amp: 1.00, flow: 0.10 },
+    pipeline:   { deep: 0x0d1636, l: 0x2fd4a0, r: 0x4f6cf7, hot: 0xeafff4, amp: 1.12, flow: 0.14 },
+    deal:       { deep: 0x101034, l: 0x4f9cf7, r: 0xc26cf0, hot: 0xffeedd, amp: 0.92, flow: 0.08 },
+    discovery:  { deep: 0x0e1530, l: 0x25c9b4, r: 0x7d7bf5, hot: 0xf2fbff, amp: 1.05, flow: 0.12 },
+    objections: { deep: 0x1a1030, l: 0xf0a422, r: 0xd857c4, hot: 0xfff6df, amp: 1.08, flow: 0.13 },
+    emails:     { deep: 0x0f1234, l: 0x38aef8, r: 0xef6cb2, hot: 0xfff2ea, amp: 0.96, flow: 0.10 },
+    team:       { deep: 0x0c1630, l: 0x30d970, r: 0x2f9cf0, hot: 0xf0fff2, amp: 1.10, flow: 0.13 },
+    inspect:    { deep: 0x101332, l: 0x55e0e8, r: 0x9c7bf7, hot: 0xf4f6ff, amp: 0.94, flow: 0.09 },
+    coaching:   { deep: 0x0e142e, l: 0x4fe0c0, r: 0x8460f0, hot: 0xf0fbff, amp: 0.90, flow: 0.08 }
   };
 
   function hexToRgb(hex) {
@@ -1437,13 +1447,15 @@ DCC.DATA = {
         uPixelRatio: { value: this.dpr },
         uFlow: { value: 0.1 },
         uColDeep: { value: new THREE.Vector3(...hexToRgb(THEMES.playbook.deep)) },
-        uColMain: { value: new THREE.Vector3(...hexToRgb(THEMES.playbook.main)) },
+        uColL: { value: new THREE.Vector3(...hexToRgb(THEMES.playbook.l)) },
+        uColR: { value: new THREE.Vector3(...hexToRgb(THEMES.playbook.r)) },
         uColHot: { value: new THREE.Vector3(...hexToRgb(THEMES.playbook.hot)) },
         uRipples: { value: Array.from({ length: 6 }, () => new THREE.Vector4(0, 0, 0, 0)) }
       };
       this._target = {
         deep: hexToRgb(THEMES.playbook.deep),
-        main: hexToRgb(THEMES.playbook.main),
+        l: hexToRgb(THEMES.playbook.l),
+        r: hexToRgb(THEMES.playbook.r),
         hot: hexToRgb(THEMES.playbook.hot),
         amp: 1, flow: 0.1
       };
@@ -1510,7 +1522,7 @@ DCC.DATA = {
       const geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(arr, 3));
       const mat = new THREE.PointsMaterial({
-        color: 0xff5570, size: 0.035, transparent: true, opacity: 0.35,
+        color: 0x7fa8ff, size: 0.035, transparent: true, opacity: 0.32,
         depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true
       });
       this.dust = new THREE.Points(geo, mat);
@@ -1529,7 +1541,8 @@ DCC.DATA = {
     setTheme(name) {
       const th = THEMES[name] || THEMES.playbook;
       this._target.deep = hexToRgb(th.deep);
-      this._target.main = hexToRgb(th.main);
+      this._target.l = hexToRgb(th.l);
+      this._target.r = hexToRgb(th.r);
       this._target.hot = hexToRgb(th.hot);
       this._target.amp = th.amp;
       this._target.flow = th.flow;
@@ -1577,7 +1590,7 @@ DCC.DATA = {
       const u = this.uniforms, tg = this._target;
       const lerp = (a, b, f) => a + (b - a) * f;
       const f = 1 - Math.exp(-dt * 3.2);
-      ['Deep', 'Main', 'Hot'].forEach(name => {
+      ['Deep', 'L', 'R', 'Hot'].forEach(name => {
         const v = u['uCol' + name].value, t = tg[name.toLowerCase()];
         v.x = lerp(v.x, t[0], f); v.y = lerp(v.y, t[1], f); v.z = lerp(v.z, t[2], f);
       });
@@ -1625,7 +1638,7 @@ DCC.DATA = {
 /* ============================================================
    Deal Command Center — canvas charts
    Ring gauge · MEDDPICC radar · sparkline · distribution bars
-   All single-series, brand-crimson, digits/labels carry meaning
+   All single-series, accent-violet, digits/labels carry meaning
    (never color alone). Animated mount, DPR-crisp.
    ============================================================ */
 'use strict';
@@ -1634,7 +1647,7 @@ DCC.DATA = {
   const INK = '#F2EEF3', INK2 = '#B9B3C2', INK3 = '#847E90';
   const GRID = 'rgba(255,255,255,0.07)';
   const STATUS = { good: '#3ECF8E', warn: '#F2B33D', bad: '#FF5A64', dim: '#847E90' };
-  const RED = '#FF3B4E', RED_SOFT = 'rgba(255,59,78,0.16)';
+  const RED = '#8B5CF6', RED_SOFT = 'rgba(139,92,246,0.16)';
 
   function setup(canvas, w, h) {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -2048,8 +2061,8 @@ DCC.DATA = {
   const S = DCC.Store, D = DCC.DATA, C = DCC.Charts;
   const fmtMoney = DCC.fmtMoney, fmtDate = DCC.fmtDate;
 
-  const SCORE_BG = ['rgba(255,255,255,0.05)', '#58101B', '#A8152B', '#F2374E'];
-  const SCORE_FG = ['#847E90', '#FFB9C1', '#FFE3E6', '#FFFFFF'];
+  const SCORE_BG = ['rgba(255,255,255,0.05)', '#2C2260', '#6A46C9', '#B79CFF'];
+  const SCORE_FG = ['#7F8294', '#C9BDF0', '#F1EBFF', '#1D1145'];
 
   const VIEWS = {
     playbook:   { num: '01', label: 'Playbook',       roles: ['rep', 'manager'], theme: 'playbook',   sub: 'Challenger is how you sell. MEDDPICC is how you know it’s real.' },
@@ -2664,7 +2677,7 @@ DCC.DATA = {
       const t = S.team();
       const deals = S.state.deals;
       st.appendChild(this.head('Inspect evidence, not enthusiasm.',
-        'The pipeline as your reps scored it — every claim maps to a letter. The red column is the team’s skill gap; the red row is this week’s deal review.'));
+        'The pipeline as your reps scored it — every claim maps to a letter. The darkest column is the team’s skill gap; the darkest row is this week’s deal review.'));
 
       // KPIs
       st.appendChild(el('section.kpi-row.reveal', { style: { '--i': 1 } },

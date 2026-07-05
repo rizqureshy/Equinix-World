@@ -1,7 +1,7 @@
 /* ============================================================
    Deal Command Center — canvas charts
    Ring gauge · MEDDPICC radar · sparkline · distribution bars
-   All single-series, brand-crimson, digits/labels carry meaning
+   All single-series, accent-violet, digits/labels carry meaning
    (never color alone). Animated mount, DPR-crisp.
    ============================================================ */
 'use strict';
@@ -10,7 +10,7 @@
   const INK = '#F2EEF3', INK2 = '#B9B3C2', INK3 = '#847E90';
   const GRID = 'rgba(255,255,255,0.07)';
   const STATUS = { good: '#3ECF8E', warn: '#F2B33D', bad: '#FF5A64', dim: '#847E90' };
-  const RED = '#FF3B4E', RED_SOFT = 'rgba(255,59,78,0.16)';
+  const RED = '#8B5CF6', RED_SOFT = 'rgba(139,92,246,0.16)';
 
   function setup(canvas, w, h) {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
