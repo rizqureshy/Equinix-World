@@ -155,11 +155,13 @@ canvas { display: block; }
 
 /* ---------- stage & transitions ---------- */
 .stage { flex: 1; padding: 34px 34px 110px; max-width: 1200px; width: 100%; margin: 0 auto; }
-.stage.leave { animation: stageLeave 0.17s ease forwards; }
-@keyframes stageLeave { to { opacity: 0; transform: translateY(10px); } }
-.reveal { opacity: 0; transform: translateY(18px); animation: revealUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: calc(var(--i, 0) * 60ms); }
+.stage.leave { animation: stageLeave 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+@keyframes stageLeave { to { opacity: 0; transform: translateY(-8px); } }
+.reveal { opacity: 0; transform: translateY(14px); animation: revealUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: calc(var(--i, 0) * 55ms); }
 @keyframes revealUp { to { opacity: 1; transform: none; } }
-.stage:not(.enter) .reveal { animation-duration: 0.45s; }
+.stage:not(.enter) .reveal { animation-duration: 0.4s; }
+/* soft re-renders (filters, sorts, deal switch): swap content with no replayed stagger */
+.stage.soft .reveal { animation: none; opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .reveal { animation: none; opacity: 1; transform: none; }
   .stage.leave { animation: none; }
@@ -400,7 +402,7 @@ canvas { display: block; }
 .chip.alt.on { background: rgba(255, 255, 255, 0.16); border-color: var(--line2); }
 
 .q-list { display: flex; flex-direction: column; gap: 10px; }
-.q-card { padding: 17px 21px; }
+.q-card { padding: 17px 21px; transition: opacity 0.3s, border-color 0.25s; }
 .q-card.asked { opacity: 0.6; }
 .q-top { display: flex; gap: 12px; align-items: baseline; }
 .q-top .letter-chip { flex-shrink: 0; margin-top: 2px; }
@@ -415,8 +417,14 @@ canvas { display: block; }
 .obj-head { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 23px; text-align: left; transition: background 0.18s; }
 .obj-head:hover { background: rgba(255, 255, 255, 0.04); }
 .obj-title { font-size: 15.5px; font-weight: 600; line-height: 1.5; }
-.obj-chev { font-family: var(--mono); font-size: 17px; color: var(--acc-hi); flex-shrink: 0; }
-.obj-body { display: grid; grid-template-columns: 1fr 1.5fr; gap: 14px; padding: 0 23px 21px; animation: revealUp 0.35s ease; }
+.obj-chev { font-family: var(--mono); font-size: 17px; color: var(--acc-hi); flex-shrink: 0; transition: transform 0.3s; }
+.obj-card.open .obj-chev { transform: rotate(180deg); }
+/* height animates via the 0fr→1fr grid-row trick; body stays in the DOM */
+.obj-wrap { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.38s cubic-bezier(0.4, 0, 0.2, 1); }
+.obj-card.open .obj-wrap { grid-template-rows: 1fr; }
+.obj-wrap > .obj-body { overflow: hidden; min-height: 0; }
+.obj-body { display: grid; grid-template-columns: 1fr 1.5fr; gap: 14px; padding: 0 23px; opacity: 0; transition: opacity 0.3s 0.08s, padding-bottom 0.38s cubic-bezier(0.4, 0, 0.2, 1); }
+.obj-card.open .obj-body { opacity: 1; padding-bottom: 21px; }
 .obj-trap { background: rgba(58, 45, 16, 0.6); border: 1px solid rgba(245, 186, 75, 0.28); border-radius: 10px; padding: 15px 17px; }
 .obj-trap p { font-size: 13.5px; color: #F5DFAE; line-height: 1.65; }
 .obj-track { background: rgba(46, 30, 107, 0.35); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px; padding: 15px 17px; }

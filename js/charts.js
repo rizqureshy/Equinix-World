@@ -37,35 +37,44 @@
   const Charts = {
     statusColor: s => STATUS[s] || STATUS.dim,
 
-    /* Ring gauge: pct 0-100, status good|warn|bad. Center text is DOM (crisper). */
-    ring(canvas, pct, status, size, thick) {
+    /* Ring gauge: pct 0-100, status good|warn|bad. Center text is DOM (crisper).
+       Pass fromPct to animate from a previous value instead of from zero. */
+    ring(canvas, pct, status, size, thick, fromPct) {
       const s = size || 84, th = thick || 7;
       const ctx = setup(canvas, s, s);
       const c = s / 2, r = c - th / 2 - 1;
       const col = STATUS[status] || RED;
+      const p0 = fromPct || 0;
       animate(t => {
         ctx.clearRect(0, 0, s, s);
         ctx.lineWidth = th;
         ctx.lineCap = 'round';
         ctx.strokeStyle = GRID;
         ctx.beginPath(); ctx.arc(c, c, r, 0, Math.PI * 2); ctx.stroke();
-        const a0 = -Math.PI / 2, a1 = a0 + Math.PI * 2 * (pct / 100) * t;
-        if (pct > 0) {
+        const cur = p0 + (pct - p0) * t;
+        const a0 = -Math.PI / 2, a1 = a0 + Math.PI * 2 * (cur / 100);
+        if (cur > 0.4) {
           ctx.strokeStyle = col;
           ctx.shadowColor = col; ctx.shadowBlur = 8;
           ctx.beginPath(); ctx.arc(c, c, r, a0, a1); ctx.stroke();
           ctx.shadowBlur = 0;
         }
-      });
+      }, fromPct != null ? 450 : 700);
     },
 
-    /* Radar: 8 MEDDPICC letters, values 0-3 */
-    radar(canvas, letters, scores, size) {
+    /* Radar: 8 MEDDPICC letters, values 0-3.
+       Pass fromScores to morph from a previous shape instead of growing from center. */
+    radar(canvas, letters, scores, size, fromScores) {
       const s = size || 240;
       const ctx = setup(canvas, s, s);
       const c = s / 2, R = c - 26, n = letters.length;
       const angle = i => -Math.PI / 2 + (i / n) * Math.PI * 2;
       const pt = (i, v) => [c + Math.cos(angle(i)) * R * v, c + Math.sin(angle(i)) * R * v];
+      const val = (k, obj) => Math.max(0.04, (((obj || {})[k]) ?? 0) / 3);
+      const lerpV = (k, t) => {
+        const from = fromScores ? val(k, fromScores) : 0.04;
+        return from + (val(k, scores) - from) * t;
+      };
 
       animate(t => {
         ctx.clearRect(0, 0, s, s);
@@ -83,8 +92,7 @@
         // data polygon
         ctx.beginPath();
         for (let i = 0; i <= n; i++) {
-          const v = Math.max(0.04, (scores[letters[i % n].k] ?? 0) / 3) * t;
-          const [x, y] = pt(i % n, v);
+          const [x, y] = pt(i % n, lerpV(letters[i % n].k, t));
           i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
         }
         ctx.closePath();
@@ -93,7 +101,7 @@
         // vertex dots
         for (let i = 0; i < n; i++) {
           const raw = scores[letters[i].k] ?? 0;
-          const [x, y] = pt(i, Math.max(0.04, raw / 3) * t);
+          const [x, y] = pt(i, lerpV(letters[i].k, t));
           ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI * 2);
           ctx.fillStyle = raw <= 1 ? STATUS.bad : RED;
           ctx.fill();
@@ -107,11 +115,11 @@
           ctx.fillStyle = raw <= 1 ? INK2 : INK;
           ctx.fillText(letters[i].k, x, y);
         }
-      }, 850);
+      }, fromScores ? 450 : 850);
     },
 
-    /* Sparkline: array of {pct} points, 0-100 */
-    spark(canvas, hist, w, h, status) {
+    /* Sparkline: array of {pct} points, 0-100. instant=true skips the sweep-in. */
+    spark(canvas, hist, w, h, status, instant) {
       const W = w || 180, H = h || 44;
       const ctx = setup(canvas, W, H);
       const col = STATUS[status] || RED;
@@ -120,7 +128,7 @@
       const pad = 4;
       const x = i => pad + (i / (vals.length - 1)) * (W - pad * 2);
       const y = v => H - pad - (v / 100) * (H - pad * 2);
-      animate(t => {
+      const draw = t => {
         ctx.clearRect(0, 0, W, H);
         const m = Math.max(2, Math.ceil(vals.length * t));
         // area fill
@@ -140,7 +148,9 @@
         // last point
         ctx.beginPath(); ctx.arc(x(m - 1), y(vals[m - 1]), 3.2, 0, Math.PI * 2);
         ctx.fillStyle = col; ctx.fill();
-      }, 750);
+      };
+      if (instant) draw(1);
+      else animate(draw, 750);
     },
 
     /* Horizontal distribution bars: [{label, count, status}] */

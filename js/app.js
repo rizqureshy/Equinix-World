@@ -145,7 +145,12 @@
       DCC.Waves.setTheme(v.theme);
       DCC.Waves.pulse(instant ? 0.35 : 0.6);
       this.cycleTip(true);
-      const paint = () => { this.renderView(); this.stage.scrollTop = 0; window.scrollTo(0, 0); };
+      const paint = () => {
+        this.renderView();
+        this.stage.scrollTop = 0;
+        // instant jump: smooth-scrolling to top mid-transition reads as jank
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      };
       if (instant) { paint(); this.stage.classList.add('enter'); setTimeout(() => this.stage.classList.remove('enter'), 700); }
       else {
         this.stage.classList.add('leave');
@@ -154,7 +159,7 @@
           paint();
           this.stage.classList.add('enter');
           setTimeout(() => this.stage.classList.remove('enter'), 700);
-        }, 170);
+        }, 200);
       }
     },
 
@@ -198,6 +203,11 @@
     /* ---------- view dispatch ---------- */
     renderView(soft) {
       DCC.UI.hideTip();
+      this._dr = null;
+      this._gapWrap = null;
+      this._calloutEl = null;
+      // soft re-renders (filters, sorts, deal switch) skip the reveal stagger
+      this.stage.classList.toggle('soft', !!soft);
       this.stage.innerHTML = '';
       const fn = {
         playbook: this.vPlaybook, pipeline: this.vPipeline, deal: this.vDeal,
@@ -415,6 +425,10 @@
 
       st.appendChild(this.head('Score the deal. <span class="dim">Find the lie.</span>', D.scaleLegend + '. Scores and evidence notes save automatically.'));
 
+      const ringB = el('b', { text: h.pct + '%' });
+      const ringI = el('i', { text: h.label });
+      const gateStat = this.stat('Gate', gate.name);
+
       st.appendChild(el('section.card.deal-head.reveal', { style: { '--i': 1 } },
         el('div.deal-head-main', null,
           el('div.deal-switch-row', null,
@@ -429,40 +443,35 @@
             this.stat('Stage', D.stagesShort[d.stage - 1]),
             this.stat('Close', (dtc >= 0 ? 'in ' + dtc + 'd' : Math.abs(dtc) + 'd ago')),
             this.stat('Rep', d.rep),
-            this.stat('Gate', gate.name))),
+            gateStat)),
         el('div.deal-head-side', null,
-          el('div.ring-wrap.lg', null, ring, el('div.ring-txt', null, el('b', { text: h.pct + '%' }), el('i', { text: h.label }))))));
+          el('div.ring-wrap.lg', null, ring, el('div.ring-txt', null, ringB, ringI)))));
 
-      if (gate.name !== 'Commit' && h.pct >= 50)
-        st.appendChild(el('div.callout.warn.reveal', { style: { '--i': 2 }, html: '<strong>Health is high but the gate says ' + gate.name + '.</strong> Check EB / DP / PP — averages hide the letter that kills the deal.' }));
-      else if (h.pct < S.state.settings.riskThreshold)
-        st.appendChild(el('div.callout.warn.reveal', { style: { '--i': 2 }, html: '<strong>Below commit threshold (' + S.state.settings.riskThreshold + '%).</strong> This deal doesn’t qualify for a forecast commit. Work the gap plan below before it goes on the sheet.' }));
+      this._calloutEl = el('div.callout.warn.reveal', { style: { '--i': 2 } });
+      st.appendChild(this._calloutEl);
+      this.updateDealCallout(d);
 
       // live widgets stay pinned beside the scrolling scorecard
+      const wPct = el('span.w-pct', { text: h.pct + '%', style: { color: C.statusColor(h.status) } });
+      const wLabel = el('div.w-label', { text: h.label });
+      const wGate = el('span.badge.' + gate.cls, { text: gate.name });
+      const sparkNote = el('div.spark-note', { text: this.sparkNoteText(d, h) });
+      const nbaBody = el('div', null, this.nbaContent(gaps));
       const widgets = el('aside.deal-widgets.reveal', { style: { '--i': 3 } },
         el('div.card.widget-card', null,
           el('div.card-kicker', { text: 'Live health' }),
-          el('div.w-health-row', null,
-            el('span.w-pct', { text: h.pct + '%', style: { color: C.statusColor(h.status) } }),
-            el('div.w-health-meta', null,
-              el('div.w-label', { text: h.label }),
-              el('span.badge.' + gate.cls, { text: gate.name })))),
+          el('div.w-health-row', null, wPct,
+            el('div.w-health-meta', null, wLabel, wGate))),
         el('div.card.widget-card', null,
           el('div.card-kicker', { text: 'Letter shape' }),
           el('div.radar-wrap', null, radar)),
         el('div.card.widget-card', null,
           el('div.card-kicker', { text: 'Health momentum' }),
           el('div.spark-wrap', null, spark),
-          el('div.spark-note', { text: d.history.length > 1 ? 'From ' + d.history[0].pct + '% (' + fmtDate(d.history[0].ts) + ') to ' + h.pct + '% today' : 'Score the deal to start the trend' })),
+          sparkNote),
         el('div.card.widget-card.nba', null,
           el('div.card-kicker', { text: 'Next best action' }),
-          gaps.length
-            ? el('div', null,
-                el('div.nba-letter', { text: gaps[0].k + ' · ' + gaps[0].name }),
-                el('p.card-body.small', { text: gaps[0].action }))
-            : el('div', null,
-                el('div.nba-letter.good', { text: 'No open gaps' }),
-                el('p.card-body.small', { text: 'Every letter is at “told to us” or better. Re-verify before commit: evidence ages.' }))));
+          nbaBody));
 
       const scoreCol = el('div.deal-scorecol');
       st.appendChild(el('div.deal-body', null, scoreCol, widgets));
@@ -472,6 +481,7 @@
         el('h2.section-title', { text: 'Scorecard' }),
         el('span.legend', { text: D.scaleLegend })));
 
+      const rowRefs = {};
       scoreCol.appendChild(el('section.score-list', null, D.letters.map((l, i) => {
         const sc = d.scores[l.k];
         const scored = sc !== undefined && sc !== null;
@@ -482,48 +492,139 @@
         });
         ta.value = d.notes[l.k] || '';
         const noteWrap = el('div.note-wrap' + (noteOpen ? '.open' : ''), null, ta);
+        const badge = el('div.score-badge', {
+          text: l.k,
+          style: { background: scored ? SCORE_BG[sc] : 'rgba(255,255,255,0.06)', color: scored ? SCORE_FG[sc] : '#C3C7D4' }
+        });
+        const anchor = el('div.score-anchor' + (scored ? (sc >= 2 ? '.good' : '.bad') : ''), {
+          text: scored ? l.anchors[sc] : 'Not scored yet — pick the anchor that matches your evidence.'
+        });
+        const btns = [0, 1, 2, 3].map(v =>
+          el('button.score-btn' + (sc === v ? '.on' : ''), {
+            text: String(v),
+            'data-tip': l.anchors[v],
+            onclick: () => { S.setScore(d, l.k, v); DCC.Waves.pulse(0.3); this.updateDealLive(d, l.k); }
+          }));
+        rowRefs[l.k] = { badge, anchor, btns };
         return el('article.card.score-row.reveal', { style: { '--i': Math.min(5 + i, 11) } },
-          el('div.score-badge', {
-            text: l.k,
-            style: { background: scored ? SCORE_BG[sc] : 'rgba(255,255,255,0.06)', color: scored ? SCORE_FG[sc] : '#B9B3C2' }
-          }),
+          badge,
           el('div.score-mid', null,
             el('div.score-name-row', null,
               el('span.score-name', { text: l.name }),
               el('span.tip-dot', { 'data-tip': l.tip, text: '?' })),
             el('div.score-def', { text: l.def }),
-            el('div.score-anchor' + (scored ? (sc >= 2 ? '.good' : '.bad') : ''), {
-              text: scored ? l.anchors[sc] : 'Not scored yet — pick the anchor that matches your evidence.'
-            }),
+            anchor,
             noteWrap,
             el('button.note-toggle', {
               text: noteOpen ? 'Evidence note' : '+ Evidence note',
               onclick: e => { noteWrap.classList.toggle('open'); if (noteWrap.classList.contains('open')) ta.focus(); }
             })),
-          el('div.score-btns', null, [0, 1, 2, 3].map(v =>
-            el('button.score-btn' + (sc === v ? '.on' : ''), {
-              text: String(v),
-              'data-tip': l.anchors[v],
-              onclick: () => { S.setScore(d, l.k, v); DCC.Waves.pulse(0.3); this.refresh(); }
-            }))));
+          el('div.score-btns', null, btns));
       })));
 
-      // gap plan
-      if (gaps.length) {
-        scoreCol.appendChild(el('div.section-head.reveal', { style: { '--i': 12 } },
-          el('h2.section-title', { text: 'Gap plan — ' + gaps.length + ' coaching action' + (gaps.length > 1 ? 's' : '') })));
-        scoreCol.appendChild(el('section.gap-list.reveal', { style: { '--i': 13 } }, gaps.map(g =>
-          el('div.gap-row', null,
-            el('span.gap-k', { text: g.k + ' · ' + g.name }),
-            el('span.gap-action', { text: g.action })))));
-      }
+      // gap plan (re-rendered in place on score changes)
+      this._gapWrap = el('div.gap-wrap');
+      scoreCol.appendChild(this._gapWrap);
+      this.renderGapPlan(gaps);
 
       const compact = window.innerWidth < 1010;
+      this._dr = {
+        dealId: d.id, ring, ringB, ringI,
+        gateStatV: gateStat.querySelector('.stat-v'),
+        wPct, wLabel, wGate, radar, spark, sparkNote, nbaBody,
+        rows: rowRefs,
+        radarSize: compact ? 128 : 206,
+        sparkW: compact ? 150 : 234, sparkH: compact ? 46 : 54,
+        lastPct: 0, lastScores: {}
+      };
       requestAnimationFrame(() => {
         C.ring(ring, h.pct, h.status, 96, 8);
         C.radar(radar, D.letters, d.scores, compact ? 128 : 206);
         C.spark(spark, d.history, compact ? 150 : 234, compact ? 46 : 54, h.status);
+        if (this._dr && this._dr.dealId === d.id) {
+          this._dr.lastPct = h.pct;
+          this._dr.lastScores = Object.assign({}, d.scores);
+        }
       });
+    },
+
+    /* ---- Deal Room in-place updates: no full re-render on score clicks ---- */
+    sparkNoteText(d, h) {
+      return d.history.length > 1
+        ? 'From ' + d.history[0].pct + '% (' + fmtDate(d.history[0].ts) + ') to ' + h.pct + '% today'
+        : 'Score the deal to start the trend';
+    },
+
+    nbaContent(gaps) {
+      return gaps.length
+        ? el('div', null,
+            el('div.nba-letter', { text: gaps[0].k + ' · ' + gaps[0].name }),
+            el('p.card-body.small', { text: gaps[0].action }))
+        : el('div', null,
+            el('div.nba-letter.good', { text: 'No open gaps' }),
+            el('p.card-body.small', { text: 'Every letter is at “told to us” or better. Re-verify before commit: evidence ages.' }));
+    },
+
+    updateDealCallout(d) {
+      const c = this._calloutEl;
+      if (!c) return;
+      const h = S.health(d), gate = S.gate(d);
+      if (gate.name !== 'Commit' && h.pct >= 50)
+        c.innerHTML = '<strong>Health is high but the gate says ' + gate.name + '.</strong> Check EB / DP / PP — averages hide the letter that kills the deal.';
+      else if (h.pct < S.state.settings.riskThreshold)
+        c.innerHTML = '<strong>Below commit threshold (' + S.state.settings.riskThreshold + '%).</strong> This deal doesn’t qualify for a forecast commit. Work the gap plan below before it goes on the sheet.';
+      else { c.style.display = 'none'; return; }
+      c.style.display = '';
+    },
+
+    renderGapPlan(gaps) {
+      const w = this._gapWrap;
+      if (!w) return;
+      w.innerHTML = '';
+      if (!gaps.length) return;
+      w.append(
+        el('div.section-head', null,
+          el('h2.section-title', { text: 'Gap plan — ' + gaps.length + ' coaching action' + (gaps.length > 1 ? 's' : '') })),
+        el('section.gap-list', null, gaps.map(g =>
+          el('div.gap-row', null,
+            el('span.gap-k', { text: g.k + ' · ' + g.name }),
+            el('span.gap-action', { text: g.action })))));
+    },
+
+    updateDealLive(d, k) {
+      const r = this._dr;
+      if (!r || r.dealId !== d.id || S.state.view !== 'deal') { this.refresh(); return; }
+      const h = S.health(d), gate = S.gate(d), gaps = S.gaps(d);
+      const l = letterByK(k), sc = d.scores[k];
+      const scored = sc !== undefined && sc !== null;
+      const row = r.rows[k];
+      if (row) {
+        row.badge.style.background = scored ? SCORE_BG[sc] : 'rgba(255,255,255,0.06)';
+        row.badge.style.color = scored ? SCORE_FG[sc] : '#C3C7D4';
+        row.anchor.textContent = scored ? l.anchors[sc] : 'Not scored yet — pick the anchor that matches your evidence.';
+        row.anchor.className = 'score-anchor' + (scored ? (sc >= 2 ? ' good' : ' bad') : '');
+        row.btns.forEach((b, v) => b.classList.toggle('on', sc === v));
+      }
+      const col = C.statusColor(h.status);
+      r.wPct.textContent = h.pct + '%';
+      r.wPct.style.color = col;
+      r.wLabel.textContent = h.label;
+      r.wGate.className = 'badge ' + gate.cls;
+      r.wGate.textContent = gate.name;
+      r.ringB.textContent = h.pct + '%';
+      r.ringI.textContent = h.label;
+      r.gateStatV.textContent = gate.name;
+      r.sparkNote.textContent = this.sparkNoteText(d, h);
+      r.nbaBody.innerHTML = '';
+      r.nbaBody.appendChild(this.nbaContent(gaps));
+      C.ring(r.ring, h.pct, h.status, 96, 8, r.lastPct);
+      C.radar(r.radar, D.letters, d.scores, r.radarSize, r.lastScores);
+      C.spark(r.spark, d.history, r.sparkW, r.sparkH, h.status, true);
+      this.renderGapPlan(gaps);
+      this.updateDealCallout(d);
+      this.renderSideFoot();
+      r.lastPct = h.pct;
+      r.lastScores = Object.assign({}, d.scores);
     },
 
     brief(d) {
@@ -574,23 +675,32 @@
       if (d && this.hideAsked) qs = qs.filter(q => !d.asked.includes(q.id));
 
       st.appendChild(el('section.q-list', null, qs.map((q, i) => {
-        const asked = d && d.asked.includes(q.id);
-        return el('article.card.q-card.reveal' + (asked ? '.asked' : ''), { style: { '--i': Math.min(i + 2, 10) } },
+        let asked = d && d.asked.includes(q.id);
+        let card;
+        const askBtn = d ? el('button.mini-btn' + (asked ? '.good' : ''), {
+          html: asked ? '✓' : '○', 'data-tip': asked ? 'Asked — click to unmark' : 'Mark as asked on ' + d.name,
+          onclick: () => {
+            asked = !asked;
+            d.asked = asked ? d.asked.concat(q.id) : d.asked.filter(x => x !== q.id);
+            S.touch(d);
+            if (this.hideAsked) { this.refresh(); return; }
+            card.classList.toggle('asked', asked);
+            askBtn.classList.toggle('good', asked);
+            askBtn.innerHTML = asked ? '✓' : '○';
+            askBtn.setAttribute('data-tip', asked ? 'Asked — click to unmark' : 'Mark as asked on ' + d.name);
+          }
+        }) : null;
+        card = el('article.card.q-card.reveal' + (asked ? '.asked' : ''), { style: { '--i': Math.min(i + 2, 10) } },
           el('div.q-top', null,
             el('span.letter-chip', { text: q.tag, 'data-tip': letterByK(q.tag).name }),
             el('span.q-text', { text: q.q }),
             el('span.spacer'),
             el('button.mini-btn', { html: '⧉', 'data-tip': 'Copy question', onclick: () => copyText(q.q, 'Question copied') }),
-            d ? el('button.mini-btn' + (asked ? '.good' : ''), {
-              html: asked ? '✓' : '○', 'data-tip': asked ? 'Asked — click to unmark' : 'Mark as asked on ' + d.name,
-              onclick: () => {
-                d.asked = asked ? d.asked.filter(x => x !== q.id) : d.asked.concat(q.id);
-                S.touch(d); this.refresh();
-              }
-            }) : null),
+            askBtn),
           S.state.settings.showListen
             ? el('div.q-listen', { html: '<b>Listen for</b>' + q.listen })
             : null);
+        return card;
       })));
     },
 
@@ -600,22 +710,37 @@
       st.appendChild(this.head('Reframe. Don’t rebut.',
         'Each objection has a trap (the answer a vendor gives) and a Challenger reframe. Click to expand; copy the track and make it yours.'));
 
+      // bodies are always in the DOM; open/close animates height in place
       st.appendChild(el('section.obj-list', null, D.objections.map((o, i) => {
         const open = this.openObj === i;
-        return el('article.card.obj-card.reveal' + (open ? '.open' : ''), { style: { '--i': Math.min(i + 1, 9) } },
+        const chev = el('span.obj-chev', { text: open ? '−' : '+' });
+        const card = el('article.card.obj-card.reveal' + (open ? '.open' : ''), { style: { '--i': Math.min(i + 1, 9) } },
           el('button.obj-head', {
-            onclick: () => { this.openObj = open ? -1 : i; this.refresh(); }
+            onclick: () => {
+              const wasOpen = card.classList.contains('open');
+              st.querySelectorAll('.obj-card.open').forEach(c => {
+                c.classList.remove('open');
+                const ch = c.querySelector('.obj-chev');
+                if (ch) ch.textContent = '+';
+              });
+              if (wasOpen) { this.openObj = -1; return; }
+              card.classList.add('open');
+              chev.textContent = '−';
+              this.openObj = i;
+            }
           },
             el('span.obj-title', { text: '“' + o.title + '”' }),
-            el('span.obj-chev', { text: open ? '−' : '+' })),
-          open ? el('div.obj-body', null,
-            el('div.obj-trap', null,
-              el('div.card-kicker.amber', { text: 'The trap' }),
-              el('p', { text: o.trap })),
-            el('div.obj-track', null,
-              el('div.card-kicker', { text: 'The reframe' }),
-              el('p', { text: o.track }),
-              el('button.btn.ghost.sm', { text: 'Copy track', onclick: () => copyText(o.track, 'Reframe copied') }))) : null);
+            chev),
+          el('div.obj-wrap', null,
+            el('div.obj-body', null,
+              el('div.obj-trap', null,
+                el('div.card-kicker.amber', { text: 'The trap' }),
+                el('p', { text: o.trap })),
+              el('div.obj-track', null,
+                el('div.card-kicker', { text: 'The reframe' }),
+                el('p', { text: o.track }),
+                el('button.btn.ghost.sm', { text: 'Copy track', onclick: () => copyText(o.track, 'Reframe copied') })))));
+        return card;
       })));
     },
 
