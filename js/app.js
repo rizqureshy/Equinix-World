@@ -11,8 +11,8 @@
   const S = DCC.Store, D = DCC.DATA, C = DCC.Charts;
   const fmtMoney = DCC.fmtMoney, fmtDate = DCC.fmtDate;
 
-  const SCORE_BG = ['rgba(255,255,255,0.05)', '#2C2260', '#6A46C9', '#B79CFF'];
-  const SCORE_FG = ['#7F8294', '#C9BDF0', '#F1EBFF', '#1D1145'];
+  const SCORE_BG = ['rgba(255,255,255,0.06)', '#332876', '#6F4BD1', '#BCA2FF'];
+  const SCORE_FG = ['#8F94A6', '#D6CCF7', '#F4EFFF', '#1D1145'];
 
   const VIEWS = {
     playbook:   { num: '01', label: 'Playbook',       roles: ['rep', 'manager'], theme: 'playbook',   sub: 'Challenger is how you sell. MEDDPICC is how you know it’s real.' },

@@ -7,10 +7,10 @@
 'use strict';
 
 (function () {
-  const INK = '#F2EEF3', INK2 = '#B9B3C2', INK3 = '#847E90';
-  const GRID = 'rgba(255,255,255,0.07)';
-  const STATUS = { good: '#3ECF8E', warn: '#F2B33D', bad: '#FF5A64', dim: '#847E90' };
-  const RED = '#8B5CF6', RED_SOFT = 'rgba(139,92,246,0.16)';
+  const INK = '#F5F6FA', INK2 = '#C3C7D4', INK3 = '#8F94A6';
+  const GRID = 'rgba(255,255,255,0.11)';
+  const STATUS = { good: '#45D694', warn: '#F5BA4B', bad: '#FF6670', dim: '#8F94A6' };
+  const RED = '#9D74F8', RED_SOFT = 'rgba(139,92,246,0.2)';
 
   function setup(canvas, w, h) {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -89,17 +89,17 @@
         }
         ctx.closePath();
         ctx.fillStyle = RED_SOFT; ctx.fill();
-        ctx.strokeStyle = RED; ctx.lineWidth = 1.8; ctx.stroke();
+        ctx.strokeStyle = RED; ctx.lineWidth = 2.2; ctx.stroke();
         // vertex dots
         for (let i = 0; i < n; i++) {
           const raw = scores[letters[i].k] ?? 0;
           const [x, y] = pt(i, Math.max(0.04, raw / 3) * t);
-          ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2);
+          ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI * 2);
           ctx.fillStyle = raw <= 1 ? STATUS.bad : RED;
           ctx.fill();
         }
         // labels
-        ctx.font = '600 10px "IBM Plex Mono", monospace';
+        ctx.font = '600 11.5px "IBM Plex Mono", monospace';
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         for (let i = 0; i < n; i++) {
           const [x, y] = pt(i, 1.16);
@@ -135,40 +135,40 @@
         // line
         ctx.beginPath();
         for (let i = 0; i < m; i++) i ? ctx.lineTo(x(i), y(vals[i])) : ctx.moveTo(x(i), y(vals[i]));
-        ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+        ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
         ctx.stroke();
         // last point
-        ctx.beginPath(); ctx.arc(x(m - 1), y(vals[m - 1]), 2.6, 0, Math.PI * 2);
+        ctx.beginPath(); ctx.arc(x(m - 1), y(vals[m - 1]), 3.2, 0, Math.PI * 2);
         ctx.fillStyle = col; ctx.fill();
       }, 750);
     },
 
     /* Horizontal distribution bars: [{label, count, status}] */
     dist(canvas, rows, w) {
-      const W = w || 300, rowH = 30, H = rows.length * rowH + 4;
+      const W = w || 300, rowH = 34, H = rows.length * rowH + 4;
       const ctx = setup(canvas, W, H);
       const max = Math.max(1, ...rows.map(r => r.count));
-      const barX = 96, barW = W - barX - 30;
+      const barX = 106, barW = W - barX - 32;
       animate(t => {
         ctx.clearRect(0, 0, W, H);
         rows.forEach((r, i) => {
-          const yy = i * rowH + 6;
-          ctx.font = '500 11px "IBM Plex Sans", sans-serif';
+          const yy = i * rowH + 7;
+          ctx.font = '500 12.5px "IBM Plex Sans", sans-serif';
           ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
           ctx.fillStyle = INK2;
-          ctx.fillText(r.label, 0, yy + 9);
+          ctx.fillText(r.label, 0, yy + 10);
           ctx.fillStyle = GRID;
-          ctx.fillRect(barX, yy + 2, barW, 14);
+          ctx.fillRect(barX, yy + 2, barW, 16);
           const bw = (r.count / max) * barW * t;
           ctx.fillStyle = STATUS[r.status] || RED;
           if (bw > 0.5) {
             ctx.beginPath();
-            ctx.roundRect(barX, yy + 2, Math.max(bw, 3), 14, [0, 4, 4, 0]);
+            ctx.roundRect(barX, yy + 2, Math.max(bw, 3), 16, [0, 4, 4, 0]);
             ctx.fill();
           }
           ctx.fillStyle = INK;
-          ctx.font = '600 11px "IBM Plex Mono", monospace';
-          ctx.fillText(String(r.count), barX + barW + 8, yy + 9);
+          ctx.font = '600 12px "IBM Plex Mono", monospace';
+          ctx.fillText(String(r.count), barX + barW + 9, yy + 10);
         });
       }, 700);
     }
