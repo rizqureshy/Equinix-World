@@ -48,7 +48,8 @@ body {
   font-family: var(--sans);
   font-size: 14px;
   line-height: 1.55;
-  overflow-x: hidden;
+  /* clip, not hidden: hidden makes body a scroll container and kills position:sticky */
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 ::selection { background: var(--acc); color: #fff; }
@@ -326,7 +327,7 @@ canvas { display: block; }
 .chart-card { display: flex; flex-direction: column; }
 
 /* deal room: scrolling scorecard + sticky widget rail */
-.deal-body { display: grid; grid-template-columns: minmax(0, 1fr) 308px; gap: 14px; align-items: start; margin-top: 26px; }
+.deal-body { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 14px; align-items: start; margin-top: 26px; }
 .deal-scorecol { grid-column: 1; grid-row: 1; min-width: 0; }
 .deal-scorecol .section-head:first-child { margin-top: 0; }
 .deal-widgets {
@@ -631,10 +632,29 @@ mark.ph, .ph-demo { background: rgba(139, 92, 246, 0.14); color: var(--acc-hi); 
   .grid-4, .tax-row { grid-template-columns: 1fr 1fr; }
   .kpi-row { grid-template-columns: repeat(3, 1fr); }
   .charts-row { grid-template-columns: 1fr; }
-  .deal-body { grid-template-columns: 1fr; }
-  .deal-widgets { grid-column: 1; grid-row: 1; position: static; max-height: none; overflow: visible; display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; }
-  .deal-scorecol { grid-column: 1; grid-row: 2; }
-  .deal-scorecol .section-head:first-child { margin-top: 20px; }
+}
+/* narrow: widgets become a compact strip pinned under the topbar */
+@media (max-width: 1009px) {
+  .deal-body { display: flex; flex-direction: column; }
+  .deal-widgets {
+    order: -1; /* strip renders above the scorecard so sticky engages from the top */
+    position: sticky; top: 56px; z-index: 35;
+    flex-direction: row; align-items: stretch;
+    gap: 10px; max-height: none; overflow-x: auto; overflow-y: hidden;
+    padding: 10px 2px 12px; margin-bottom: 14px;
+    background: linear-gradient(180deg, rgba(5, 6, 12, 0.96), rgba(5, 6, 12, 0.82));
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    scrollbar-width: thin;
+  }
+  .widget-card { flex: 0 0 auto; padding: 10px 14px; }
+  .widget-card.nba { flex: 1 1 210px; min-width: 210px; }
+  .w-pct { font-size: 23px; }
+  .w-health-row { gap: 10px; }
+  .w-health-meta { gap: 3px; }
+  .spark-note { display: none; }
+  .widget-card .card-kicker { margin-bottom: 6px; }
+  .widget-card.nba .card-body { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-top: 4px; }
+  .deal-scorecol .section-head:first-child { margin-top: 6px; }
 }
 @media (max-width: 940px) {
   .side { width: 210px; }
@@ -652,7 +672,6 @@ mark.ph, .ph-demo { background: rgba(139, 92, 246, 0.14); color: var(--acc-hi); 
   .tip-chip { left: 16px; max-width: calc(100vw - 32px); }
   .kpi-row { grid-template-columns: 1fr 1fr; }
   .grid-4, .tax-row { grid-template-columns: 1fr; }
-  .deal-widgets { grid-template-columns: 1fr; }
   .deal-head { flex-direction: column; align-items: flex-start; }
   .score-row { grid-template-columns: 40px 1fr; }
   .score-btns { grid-column: 1 / -1; }
@@ -2119,6 +2138,18 @@ DCC.DATA = {
       }
       this.go(S.state.view, true);
       this.bindKeys();
+      // re-render the deal room when resizing across the compact-widget breakpoint
+      this._compactW = window.innerWidth < 1010;
+      window.addEventListener('resize', () => {
+        clearTimeout(this._rzt);
+        this._rzt = setTimeout(() => {
+          const c = window.innerWidth < 1010;
+          if (c !== this._compactW) {
+            this._compactW = c;
+            if (S.state.view === 'deal') this.refresh();
+          }
+        }, 180);
+      });
       document.getElementById('splash').classList.add('done');
       if (!S.state.tourDone) setTimeout(() => this.startTour(), 900);
     },
@@ -2578,10 +2609,11 @@ DCC.DATA = {
             el('span.gap-action', { text: g.action })))));
       }
 
+      const compact = window.innerWidth < 1010;
       requestAnimationFrame(() => {
         C.ring(ring, h.pct, h.status, 96, 8);
-        C.radar(radar, D.letters, d.scores, 206);
-        C.spark(spark, d.history, 234, 54, h.status);
+        C.radar(radar, D.letters, d.scores, compact ? 128 : 206);
+        C.spark(spark, d.history, compact ? 150 : 234, compact ? 46 : 54, h.status);
       });
     },
 

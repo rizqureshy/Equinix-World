@@ -47,6 +47,18 @@
       }
       this.go(S.state.view, true);
       this.bindKeys();
+      // re-render the deal room when resizing across the compact-widget breakpoint
+      this._compactW = window.innerWidth < 1010;
+      window.addEventListener('resize', () => {
+        clearTimeout(this._rzt);
+        this._rzt = setTimeout(() => {
+          const c = window.innerWidth < 1010;
+          if (c !== this._compactW) {
+            this._compactW = c;
+            if (S.state.view === 'deal') this.refresh();
+          }
+        }, 180);
+      });
       document.getElementById('splash').classList.add('done');
       if (!S.state.tourDone) setTimeout(() => this.startTour(), 900);
     },
@@ -506,10 +518,11 @@
             el('span.gap-action', { text: g.action })))));
       }
 
+      const compact = window.innerWidth < 1010;
       requestAnimationFrame(() => {
         C.ring(ring, h.pct, h.status, 96, 8);
-        C.radar(radar, D.letters, d.scores, 206);
-        C.spark(spark, d.history, 234, 54, h.status);
+        C.radar(radar, D.letters, d.scores, compact ? 128 : 206);
+        C.spark(spark, d.history, compact ? 150 : 234, compact ? 46 : 54, h.status);
       });
     },
 
