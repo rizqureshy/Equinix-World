@@ -1114,7 +1114,7 @@
       tour([
         { sel: '.side-brand', title: 'One app, two jobs', body: 'DealProof runs the Challenger sales motion on a MEDDPICC evidence backbone — for the reps working deals and the managers inspecting them.' },
         { sel: '.role-toggle', title: 'Rep ↔ Manager', body: 'Reps get the pipeline, deal rooms and talk tracks. Managers get the team heatmap, deal inspection and coaching tools. Press R to flip anytime.' },
-        { sel: '.side-nav', title: 'The workspace', body: 'Number keys 1–6 jump between sections. Everything autosaves locally — no backend, no login.', before: () => { if (S.state.role !== 'rep') this.setRole('rep'); } },
+        { sel: '.side-nav', title: 'The workspace', body: 'Number keys 1–6 jump between sections. Everything autosaves as you work.', before: () => { if (S.state.role !== 'rep') this.setRole('rep'); } },
         { sel: '.deal-grid, .empty', title: 'Deals, scored on evidence', body: 'Each deal is scored 0–3 per MEDDPICC letter. Health, forecast gates and coaching actions all derive from those scores.', before: () => this.go('pipeline'), wait: 420 },
         { sel: '.tip-chip', title: 'Coaching everywhere', body: 'Contextual Challenger tips live down here, hover ?-dots and score buttons for guidance, and ⌘K searches everything. Enjoy the waves.' }
       ], () => {
